@@ -2,13 +2,13 @@
 import json
 import os
 
-name = input("Input your name: ")
-last_name = input("Input your last name: ")
-number = input("Input your phone number: ")
-money = input("Input the max amount amount of money you want to use in our app: ")
-
 
 def users_data():
+    name = input("Input your name: ")
+    last_name = input("Input your last name: ")
+    number = input("Input your phone number: ")
+    money = input("Input the max amount amount of money you want to use in our app: ")
+
     dat = {'Users': []}
 
     dat['Users'].append({
@@ -23,6 +23,11 @@ def users_data():
 
 def create_json():
     if os.path.exists('users_data.json'):
+        name = input("Input your name: ")
+        last_name = input("Input your last name: ")
+        number = input("Input your phone number: ")
+        money = input("Input the max amount amount of money you want to use in our app: ")
+
         dats = json.load(open('users_data.json'))
 
         dats['Users'].append({
@@ -38,6 +43,3 @@ def create_json():
     else:
         with open('users_data.json', 'w') as file:
             json.dump(users_data(), file, indent=1)
-
-
-create_json()
