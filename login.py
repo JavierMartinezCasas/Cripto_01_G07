@@ -15,14 +15,14 @@ def login():
             dat = json.load(file)
 
         for i in dat['Users']:
-            print("Number: ", i['Number'])
+            #print("Number: ", i['Number'])
             if number == i['Number']:
                 print("Coincidence with number found")
                 if password == i['Password']:
                     print("Correct password")
+                    print()
                     print("Welcome to your account")
-                    #Aqui se llamaria a la funcion de acceso a la cuenta
-                    return
+                    return i
 
                 else:
                     print("Error: Incorrect password")
