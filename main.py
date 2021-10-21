@@ -33,3 +33,12 @@ def boot():
 
 
 boot()
+
+def send_money():
+    sender= login()
+    reciver =input('Please, introduce the phone number where do you please to send the money: ')
+    if checking_user(reciver)==1:
+        money=input('Introduce the amount of money thet you want to sent:')
+    #aqui tendriamos que encriptar el dinero, llamar a la función recivir el dinero donde se desencriptará
+    #se comrpobará que corresponde con la cantidad de dinero que ha querido ser envíada desde send_money
+    #y se dispondrá a reducir y aumentar el saldo en la cuenta de cada uno.
