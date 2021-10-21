@@ -6,6 +6,7 @@ import os
 def users_data():
     name = input("Input your name: ")
     last_name = input("Input your last name: ")
+    password = input("Input your password: ")
     number = input("Input your phone number: ")
     money = input("Input the max amount amount of money you want to use in our app: ")
 
@@ -14,6 +15,7 @@ def users_data():
     dat['Users'].append({
         'First_name': name,
         'Last_name': last_name,
+        'Password': password,
         'Number': number,
         'Money': money
     })
@@ -25,6 +27,7 @@ def create_json():
     if os.path.exists('users_data.json'):
         name = input("Input your name: ")
         last_name = input("Input your last name: ")
+        password = input("Input your password: ")
         number = input("Input your phone number: ")
         money = input("Input the max amount amount of money you want to use in our app: ")
 
@@ -33,6 +36,7 @@ def create_json():
         dats['Users'].append({
             'First_name': name,
             'Last_name': last_name,
+            'Password': password,
             'Number': number,
             'Money': money
         })
