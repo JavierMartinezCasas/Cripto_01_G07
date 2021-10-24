@@ -34,27 +34,31 @@ def boot():
 
 boot()
 
-def send_money():
-    sender= login()
+def send_money(i):
+    sender=i['Number']
     reciver =input('Please, introduce the phone number where do you please to send the money: ')
-    if checking_user(reciver)==1:
-        money=input('Introduce the amount of money thet you want to sent:')
-    #aqui tendriamos que encriptar el dinero, llamar a la función recivir el dinero donde se desencriptará
-    #se comrpobará que corresponde con la cantidad de dinero que ha querido ser envíada desde send_money
-    #y se dispondrá a reducir y aumentar el saldo en la cuenta de cada uno.
-    recibir_dinero(reciver,crip_money,money,sender)
+    if checking_user(reciver)==True:
+        money=None
+        while money == 0:
+            money = input('Introduce the amount of money that you want to send: '
+        if money > i['Money']:
+            print('You do not have enough money to perform this transfer')
+            access(i)
+        else:
+            #función encriptar
+            recibir_dinero(reciver, crip_money, money, sender)
+    else:
+        print('There is not any user with that phone number, please, try again')
+        access(i)
 
 
 def recibir_dinero(reciver,crip_money,money,sender):
-    if checking_users(reciver)==True:
-        #desencriptamos crip_money
-        if crip_money == money:
-            print('The transfer has been done successfully')
-            account_update(reciver,sender,money)
-        else:
-            print('Error decripting money')
+    #desencriptamos crip_money
+    if decrip_money == money:
+        print('The transfer has been done successfully')
+        account_update(reciver,sender,money)
     else:
-        print('That number is not register in the app, please, introduce at valid number')
-        send_money()
+        print('Error decripting money')
+        access(i)
 
 def account_update(reciver,sender,money):

@@ -1,3 +1,7 @@
+import json
+import os
+
+
 def checking_users(number):
     if os.path.exists('users_data.json'):
         #leer el json y comprobar que esta registrado el numero, de no ser el caso, devuelve error
@@ -14,4 +18,4 @@ def checking_users(number):
 
     else:
         print("Error: no hay ningun usuario registrado aun en la base de datos")
-        return
+        return False

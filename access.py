@@ -6,6 +6,9 @@ def access(i):
         if sel == '1':
             print()
             print("The money in your account is: " + i['Money'] + "€")
+        if sel=='0':
+            send_money(i)
+
 
     return
 
