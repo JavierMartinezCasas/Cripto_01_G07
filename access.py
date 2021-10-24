@@ -1,3 +1,9 @@
+from checking_users import checking_users
+import hashlib
+import hmac
+from json_atributos import json_atributos
+
+
 def access(i):
     sel = None
     while sel != '9':
@@ -6,10 +12,73 @@ def access(i):
         if sel == '1':
             print()
             print("The money in your account is: " + i['Money'] + "€")
-        if sel=='0':
+
+        if sel == '0':
             send_money(i)
-
-
     return
 
-#hwdjk
+
+def send_money(i):
+    sender = i['Number']
+    print()
+    receiver = input('Introduce the phone number of the receiving account: ')
+
+    if checking_users(receiver):
+        print()
+        money = input('Introduce the amount of money that you want to send: ')
+        while money == 0:
+            money = input('Introduce the amount of money that you want to send: ')
+
+        money = int(money)
+        if money > int(i['Money']):
+            print('You do not have enough money to perform this transfer')
+            access(i)
+        else:
+            key = str("101")
+            money = str(money)
+            hmac_money = hmac.new(key.encode(), money.encode(), hashlib.sha512).hexdigest()
+            print(hmac_money)
+            """
+            print(money)
+            crip_money = hashlib.sha256(str(money).encode('utf-8')).hexdigest()
+            print("Dinero encriptado: " + crip_money)
+            mons = hashlib.sha256(str(crip_money).encode('utf-8')).digest()
+            print(mons)
+            """
+            receive_money(sender, receiver, hmac_money, money, key, i)
+
+    else:
+        print('There is not any user with that phone number, please, try again')
+        access(i)
+        return
+
+
+def receive_money(sender, receiver, hmac_money, money, key, i):
+    print(key)
+    rec_money = hmac.new(key.encode(), money.encode(), hashlib.sha512).hexdigest()
+
+    if hmac_money == rec_money:
+        print()
+        print('The transfer has been done successfully')
+        print()
+        account_update(sender, receiver, money, i)
+
+    else:
+        print()
+        print('Error decrypting money')
+        print()
+        access(i)
+        return
+
+
+def account_update(sender, receiver, money, i):
+    balance_sender = int(json_atributos(sender, "Money"))
+    balance_receiver = int(json_atributos(receiver, "Money"))
+    balance_sender -= int(money)
+    balance_receiver += int(money)
+
+
+
+
+    access(i)
+    return
