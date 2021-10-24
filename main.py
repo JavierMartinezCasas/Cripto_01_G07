@@ -42,3 +42,19 @@ def send_money():
     #aqui tendriamos que encriptar el dinero, llamar a la función recivir el dinero donde se desencriptará
     #se comrpobará que corresponde con la cantidad de dinero que ha querido ser envíada desde send_money
     #y se dispondrá a reducir y aumentar el saldo en la cuenta de cada uno.
+    recibir_dinero(reciver,crip_money,money,sender)
+
+
+def recibir_dinero(reciver,crip_money,money,sender):
+    if checking_users(reciver)==True:
+        #desencriptamos crip_money
+        if crip_money == money:
+            print('The transfer has been done successfully')
+            account_update(reciver,sender,money)
+        else:
+            print('Error decripting money')
+    else:
+        print('That number is not register in the app, please, introduce at valid number')
+        send_money()
+
+def account_update(reciver,sender,money):
