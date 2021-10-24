@@ -23,7 +23,7 @@ def users_data():
     })
 
     return dat
-
+#hwdjk
 
 def register():
     """Comprueba que los datos introducidos son validos y añade al usuario a la base de datos (users_data.json)"""
