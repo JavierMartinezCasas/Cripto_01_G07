@@ -37,7 +37,6 @@ def register():
         with open('users_data.json') as file:
             diction = json.load(file)
             for i in diction['Users']:
-                print("Number: ", i['Number'])
                 print()
                 if number == i['Number']:
                     """Comprueba si el numero de telefono introducido ya esta en la base de datos"""

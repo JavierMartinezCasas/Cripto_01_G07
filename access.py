@@ -16,7 +16,8 @@ def access(i):
 
         if sel == '0':
             send_money(i)
-    return
+    print("Thank you for using Bizum!")
+    quit()
 
 
 def send_money(i):
@@ -39,13 +40,6 @@ def send_money(i):
             money = str(money)
             hmac_money = hmac.new(key.encode(), money.encode(), hashlib.sha512).hexdigest()
             print(hmac_money)
-            """
-            print(money)
-            crip_money = hashlib.sha256(str(money).encode('utf-8')).hexdigest()
-            print("Dinero encriptado: " + crip_money)
-            mons = hashlib.sha256(str(crip_money).encode('utf-8')).digest()
-            print(mons)
-            """
             receive_money(sender, receiver, hmac_money, money, key, i)
 
     else:
@@ -55,12 +49,11 @@ def send_money(i):
 
 
 def receive_money(sender, receiver, hmac_money, money, key, i):
-    print(key)
     rec_money = hmac.new(key.encode(), money.encode(), hashlib.sha512).hexdigest()
 
     if hmac_money == rec_money:
         print()
-        print('The transfer has been done successfully')
+        print('The transfer has been done successfully!')
         print()
         account_update(sender, receiver, money, i)
 
@@ -90,8 +83,6 @@ def account_update(sender, receiver, money, i):
             j['Money'] = balance_receiver
         list_aux.append(j)
 
-    print(list_aux)
-
     dictionary = {'Users': list_aux}
 
     with open('users_data.json', 'w') as f:
@@ -99,4 +90,3 @@ def account_update(sender, receiver, money, i):
 
     access(i)
     return
-#Hola
