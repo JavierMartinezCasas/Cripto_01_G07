@@ -4,11 +4,11 @@ import os
 
 def checking_users(number):
     if os.path.exists('users_data.json'):
-        #leer el json y comprobar que esta registrado el numero, de no ser el caso, devuelve error
+        # leer el json y comprobar que esta registrado el numero, de no ser el caso, devuelve error
         with open('users_data.json') as file:
             dat = json.load(file)
         for i in dat['Users']:
-            #print("Number: ", i['Number'])
+            # print("Number: ", i['Number'])
             if number == i['Number']:
                 print("Coincidence with number found")
                 return True

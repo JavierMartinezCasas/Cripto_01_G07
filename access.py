@@ -1,6 +1,7 @@
-from checking_users import checking_users
 import hashlib
 import hmac
+import json
+from checking_users import checking_users
 from json_atributos import json_atributos
 
 
@@ -77,8 +78,18 @@ def account_update(sender, receiver, money, i):
     balance_sender -= int(money)
     balance_receiver += int(money)
 
+    list_aux = []
 
+    with open('users_data.json') as file:
+        dat = json.load(file)
 
+    for j in dat["Users"]:
+        list_aux.append(j)
+
+    print(list_aux)
+
+    with open('users_data.json', 'w') as f:
+        json.dump(list_aux, f, indent=1)
 
     access(i)
     return
