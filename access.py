@@ -84,12 +84,19 @@ def account_update(sender, receiver, money, i):
         dat = json.load(file)
 
     for j in dat["Users"]:
+        if j['Number'] == sender:
+            j['Money'] = balance_sender
+        if j['Number'] == receiver:
+            j['Money'] = balance_receiver
         list_aux.append(j)
 
     print(list_aux)
 
+    dictionary = {'Users': list_aux}
+
     with open('users_data.json', 'w') as f:
-        json.dump(list_aux, f, indent=1)
+        json.dump(dictionary, f, indent=1)
 
     access(i)
     return
+#Hola
