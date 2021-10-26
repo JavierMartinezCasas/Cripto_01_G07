@@ -6,7 +6,6 @@ import os
 import hashlib
 import hmac
 import random
-#ks
 
 def users_data():
     name = input("Input your name: ")
@@ -72,5 +71,3 @@ def register():
     else:
         with open('users_data.json', 'w') as file:
             json.dump(users_data(), file, indent=1)
-
-#ghf

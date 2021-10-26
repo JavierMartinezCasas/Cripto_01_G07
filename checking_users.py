@@ -8,7 +8,6 @@ def checking_users(number):
         with open('users_data.json') as file:
             dat = json.load(file)
         for i in dat['Users']:
-            # print("Number: ", i['Number'])
             if number == i['Number']:
                 print("Coincidence with number found")
                 return True

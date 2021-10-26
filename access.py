@@ -39,8 +39,7 @@ def send_money(i):
             money = str(money)
             money=money.encode()
             token=f.encrypt(money)
-            print(token)
-            receive_money(sender, receiver, token, money, key,f, i)
+            receive_money(sender, receiver, token, money,f, i)
 
     else:
         print('There is not any user with that phone number, please, try again')
@@ -48,7 +47,7 @@ def send_money(i):
         return
 
 
-def receive_money(sender, receiver, token, money, key,f,i):
+def receive_money(sender, receiver, token, money,f,i):
     des_token=f.decrypt(token)
 
     if des_token == money:

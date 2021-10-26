@@ -10,7 +10,6 @@ def json_atributos(user, atributo):
             dat = json.load(file)
 
         for i in dat['Users']:
-            # print("Number: ", i['Number'])
             if number == i['Number']:
                 valor = i[atributo]
                 return valor

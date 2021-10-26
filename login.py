@@ -15,15 +15,12 @@ def login():
 
         key = json_atributos.json_atributos(number,'Key')
         password = str(password)
-
         new_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
-        # leer el json y comprobar que esta registrado el numero, de no ser el caso, devuelve error
         with open('users_data.json') as file:
             dat = json.load(file)
 
         for i in dat['Users']:
-            # print("Number: ", i['Number'])
             if number == i['Number']:
                 print("Coincidence with number found")
                 if new_password == i['Password']:
