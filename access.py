@@ -1,9 +1,7 @@
-import hashlib
-import hmac
 import json
 from checking_users import checking_users
 from json_atributos import json_atributos
-
+from cryptography.fernet import Fernet
 
 def access(i):
     sel = None
@@ -36,11 +34,13 @@ def send_money(i):
             print('You do not have enough money to perform this transfer')
             access(i)
         else:
-            key = str("101")
+            key = Fernet.generate_key()
+            f=Fernet(key)
             money = str(money)
-            hmac_money = hmac.new(key.encode(), money.encode(), hashlib.sha512).hexdigest()
-            print(hmac_money)
-            receive_money(sender, receiver, hmac_money, money, key, i)
+            money.encode()
+            token=f.encrypt(money)
+            print(token)
+            receive_money(sender, receiver, token, money, key,f, i)
 
     else:
         print('There is not any user with that phone number, please, try again')
@@ -48,10 +48,10 @@ def send_money(i):
         return
 
 
-def receive_money(sender, receiver, hmac_money, money, key, i):
-    rec_money = hmac.new(key.encode(), money.encode(), hashlib.sha512).hexdigest()
+def receive_money(sender, receiver, token, money, key,f,i):
+    des_token=f.decrypt(token)
 
-    if hmac_money == rec_money:
+    if des_token == money:
         print()
         print('The transfer has been done successfully!')
         print()

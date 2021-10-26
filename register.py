@@ -3,6 +3,8 @@ numero de telefono varias veces. Ademas se crea la base de datos y se añaden nu
 
 import json
 import os
+import hashlib
+import hmac
 
 
 def users_data():
@@ -12,12 +14,18 @@ def users_data():
     number = input("Input your phone number: ")
     money = input("Input the max amount amount of money you want to use in our app: ")
 
+
+    key = str("101")
+    password = str(password)
+    hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
+    print(hmac_password)
+
     dat = {'Users': []}
 
     dat['Users'].append({
         'First_name': name,
         'Last_name': last_name,
-        'Password': password,
+        'Password': hmac_password,
         'Number': number,
         'Money': money
     })
@@ -34,6 +42,11 @@ def register():
         number = input("Input your phone number: ")
         money = input("Input the max amount amount of money you want to use in our app: ")
 
+        key = str("101")
+        password = str(password)
+        hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
+        print(hmac_password)
+
         with open('users_data.json') as file:
             diction = json.load(file)
             for i in diction['Users']:
@@ -48,7 +61,7 @@ def register():
             dats['Users'].append({
                 'First_name': name,
                 'Last_name': last_name,
-                'Password': password,
+                'Password': hmac_password,
                 'Number': number,
                 'Money': money
             })

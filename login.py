@@ -1,5 +1,7 @@
 import json
 import os
+import hashlib
+import hmac
 
 
 def login():
@@ -10,6 +12,11 @@ def login():
         number = input("Input your number: ")
         password = input("Input your password: ")
 
+        key = str("101")
+        password = str(password)
+
+        new_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
+
         # leer el json y comprobar que esta registrado el numero, de no ser el caso, devuelve error
         with open('users_data.json') as file:
             dat = json.load(file)
@@ -18,7 +25,7 @@ def login():
             # print("Number: ", i['Number'])
             if number == i['Number']:
                 print("Coincidence with number found")
-                if password == i['Password']:
+                if new_password == i['Password']:
                     print("Correct password")
                     print()
                     print("Welcome to your account")
