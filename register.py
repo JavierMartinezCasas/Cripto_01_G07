@@ -5,6 +5,7 @@ import json
 import os
 import hashlib
 import hmac
+import random
 
 
 def users_data():
@@ -14,11 +15,9 @@ def users_data():
     number = input("Input your phone number: ")
     money = input("Input the max amount amount of money you want to use in our app: ")
 
-
-    key = str("101")
+    key=str(random.random())
     password = str(password)
     hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
-    print(hmac_password)
 
     dat = {'Users': []}
 
@@ -27,7 +26,8 @@ def users_data():
         'Last_name': last_name,
         'Password': hmac_password,
         'Number': number,
-        'Money': money
+        'Money': money,
+        'Key': key
     })
 
     return dat
@@ -42,10 +42,9 @@ def register():
         number = input("Input your phone number: ")
         money = input("Input the max amount amount of money you want to use in our app: ")
 
-        key = str("101")
+        key = str(random.random())
         password = str(password)
         hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
-        print(hmac_password)
 
         with open('users_data.json') as file:
             diction = json.load(file)
@@ -63,7 +62,8 @@ def register():
                 'Last_name': last_name,
                 'Password': hmac_password,
                 'Number': number,
-                'Money': money
+                'Money': money,
+                'Key': key
             })
 
             with open('users_data.json', 'w') as f:

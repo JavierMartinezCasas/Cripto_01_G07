@@ -2,7 +2,7 @@ import json
 import os
 import hashlib
 import hmac
-
+import json_atributos
 
 def login():
     if os.path.exists('users_data.json'):
@@ -12,7 +12,8 @@ def login():
         number = input("Input your number: ")
         password = input("Input your password: ")
 
-        key = str("101")
+
+        key = json_atributos.json_atributos(number,'Key')
         password = str(password)
 
         new_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
@@ -42,4 +43,3 @@ def login():
         print("Error: No user registered yet in the database")
         return None
 
-#gh
