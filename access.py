@@ -37,7 +37,7 @@ def send_money(i):
             key = Fernet.generate_key()
             f=Fernet(key)
             money = str(money)
-            money.encode()
+            money=money.encode()
             token=f.encrypt(money)
             print(token)
             receive_money(sender, receiver, token, money, key,f, i)
