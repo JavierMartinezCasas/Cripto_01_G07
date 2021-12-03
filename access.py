@@ -3,6 +3,7 @@ from checking_users import checking_users
 from json_atributos import json_atributos
 from cryptography.fernet import Fernet
 
+
 def access(i):
     sel = None
     while sel != '9':
@@ -35,11 +36,11 @@ def send_money(i):
             access(i)
         else:
             key = Fernet.generate_key()
-            f=Fernet(key)
+            f = Fernet(key)
             money = str(money)
-            money=money.encode()
-            token=f.encrypt(money)
-            receive_money(sender, receiver, token, money,f, i)
+            money = money.encode()
+            token = f.encrypt(money)
+            receive_money(sender, receiver, token, money, key, f, i)
 
     else:
         print('There is not any user with that phone number, please, try again')
@@ -47,8 +48,8 @@ def send_money(i):
         return
 
 
-def receive_money(sender, receiver, token, money,f,i):
-    des_token=f.decrypt(token)
+def receive_money(sender, receiver, token, money, key, f, i):
+    des_token = f.decrypt(token)
 
     if des_token == money:
         print()
