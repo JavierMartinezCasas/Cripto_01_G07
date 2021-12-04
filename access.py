@@ -34,6 +34,8 @@ def send_money(i):
         if money > int(i['Money']):
             print('You do not have enough money to perform this transfer')
             access(i)
+        elif money >= 500:
+            certificateTrans(money, i)
         else:
             key = Fernet.generate_key()
             f = Fernet(key)
@@ -89,4 +91,8 @@ def account_update(sender, receiver, money, i):
         json.dump(dictionary, f, indent=1)
 
     access(i)
+    return
+
+
+def certificateTrans(money, i):
     return

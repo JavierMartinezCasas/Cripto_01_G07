@@ -69,16 +69,24 @@ def register():
     if os.path.exists('users_data.json'):
         name = input("Input your name: ")
         last_name = input("Input your last name: ")
+
         print()
         print("The password needs to be at least 8 characters long and must include at least 1 number, 1 capital "
               "letter and 1 sign (@,#,~, etc...)")
         password = input("Input your password: ")
-        if passCheck(password):
+        while not passCheck(password):
+            print()
+            print("Error: Incorrect password, try again following the instructions above")
+            password = input("Input your password: ")
+        print("Password validated, continue your registration")
+        print()
+
+        """if passCheck(password):
             print("Password validated, continue your registration")
             print()
         else:
             print("Error: Incorrect password, try following the instructions above")
-            return
+            return"""
         number = input("Input your phone number: ")
         money = input("Input the max amount amount of money you want to use in our app: ")
 
