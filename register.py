@@ -6,6 +6,8 @@ import os
 import hashlib
 import hmac
 import random
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
 
 
 def users_data():
@@ -19,6 +21,14 @@ def users_data():
     password = str(password)
     hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
+    with open("AC1/ca1key.pem", "rb") as key_file:
+        private_key = serialization.load_pem_private_key(
+            key_file.read(),
+            password=None,
+            backend=default_backend()
+        )
+    public_key=private_key.public_key()
+
     dat = {'Users': []}
 
     dat['Users'].append({
@@ -27,7 +37,8 @@ def users_data():
         'Password': hmac_password,
         'Number': number,
         'Money': money,
-        'Key': key
+        'Key': key,
+        'Public key': public_key
     })
 
     return dat
@@ -94,6 +105,14 @@ def register():
         password = str(password)
         hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
+        with open("AC1/ca1key.pem", "rb") as key_file:
+            private_key = serialization.load_pem_private_key(
+                key_file.read(),
+                password=None,
+                backend=default_backend()
+            )
+        public_key = private_key.public_key()
+
         with open('users_data.json') as file:
             diction = json.load(file)
             for i in diction['Users']:
@@ -111,7 +130,8 @@ def register():
                 'Password': hmac_password,
                 'Number': number,
                 'Money': money,
-                'Key': key
+                'Key': key,
+                'Public key': public_key
             })
 
             with open('users_data.json', 'w') as f:

@@ -4,8 +4,9 @@ from json_atributos import json_atributos
 from cryptography.fernet import Fernet
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import serialization
 
 
 def access(i):
@@ -41,7 +42,7 @@ def send_money(i):
 
         else:
             if money >= 500:
-                if certificateTrans(money, i) is True:
+                if certificateTrans(money, i, receiver) is True:
                     key = Fernet.generate_key()
                     f = Fernet(key)
                     money = str(money)
@@ -110,17 +111,44 @@ def account_update(sender, receiver, money, i):
     return
 
 
-def certificateTrans(money, i):
-    message = "I am sending money€ to number"
+def certificateTrans(money, i, reciver):
 
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
+    message = "I"+ "("+ i + ")" + "am sending" + money + "to" + reciver
+    public_key = json_atributos(i,'Public key')
+    encrypted = public_key.encrypt(
+        message,padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None
+        )
     )
+
+    entidad_certificado(encrypted)
+
+    if id_user()==True:
+        return True
+    else:
+        return False
+
+
+def entidad_certificado(encrypted):
+
+    with open("AC1/ca1key.pem", "rb") as key_file:
+        private_key = serialization.load_pem_private_key(
+            key_file.read(), password=None, backend=default_backend()
+        )
+
+    de_message = private_key.decrypt(encrypted, padding.OAEP(
+        mgf=padding.MGF1(algorithm=hashes.SHA256()),
+        algorithm=hashes.SHA256(),
+        label=None
+    )
+                                     )
+
+    #firma el mensaje que ha descifrado con la clave privada del certificado.
 
     signature = private_key.sign(
-        message,
+        de_message,
         padding.PSS(
             mgf=padding.MGF1(hashes.SHA256()),
             salt_length=padding.PSS.MAX_LENGTH
@@ -128,13 +156,24 @@ def certificateTrans(money, i):
         hashes.SHA256()
     )
 
+
+    id_user(signature,private_key,de_message)
+
+    return
+
+def id_user(signature,private_key,de_message):
+
+    #el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
+
+    with open("public_key.pem", "rb") as key_file:
+        public_key = serialization.load_pem_public_key(
+            key_file.read(),
+            backend=default_backend()
+        )
     public_key = private_key.public_key()
-    public_key.verify(
-        signature,
-        message,
-        padding.PSS(
-            mgf=padding.MGF1(hashes.SHA256()),
-            salt_length=padding.PSS.MAX_LENGTH
-        ),
-        hashes.SHA256()
-    )
+    public_key.verify(signature,de_message,
+                      padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH)
+                      , hashes.SHA256
+                      )
+
+    return
