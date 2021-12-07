@@ -2,12 +2,12 @@ import json
 from checking_users import checking_users
 from json_atributos import json_atributos
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization
 import random
+
 
 def access(i):
     sel = None
@@ -42,7 +42,7 @@ def send_money(i):
 
         else:
             if money >= 500:
-                if certificateTrans(money, i, receiver) is True:
+                if certificateTrans(receiver) is True:
                     key = Fernet.generate_key()
                     f = Fernet(key)
                     money = str(money)
@@ -111,25 +111,22 @@ def account_update(sender, receiver, money, i):
     return
 
 
-def certificateTrans(i, reciver):
-
+def certificateTrans(receiver):
     message = random.randrange(100000000, 999999999, 1)
-    public_key = json_atributos(i,'Public key')
+    public_key = json_atributos(receiver, 'Public key')
     encrypted = public_key.encrypt(
-        message,padding.OAEP(
+        message, padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
             algorithm=hashes.SHA256(),
             label=None
         )
     )
 
-    usuario_receptor(encrypted,reciver)
+    usuario_receptor(encrypted, receiver)
 
 
-
-def usuario_receptor(encrypted,reciver):
-
-    private_key= json_atributos(reciver,'Private key')
+def usuario_receptor(encrypted, receiver):
+    private_key = json_atributos(receiver, 'Private key')
 
     de_message = private_key.decrypt(encrypted, padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -138,7 +135,7 @@ def usuario_receptor(encrypted,reciver):
     )
                                      )
 
-    #firma el mensaje que ha descifrado con la clave privada del certificado.
+    # firma el mensaje que ha descifrado con la clave privada del certificado.
 
     with open("A/Akey.pem", "rb") as key_file:
         private_key = serialization.load_pem_private_key(
@@ -155,24 +152,26 @@ def usuario_receptor(encrypted,reciver):
         ),
         hashes.SHA256()
     )
+    print(de_message)
+    print("Correct validation")
+    return True
 
-
-    id_user(signature,de_message)
+    id_user(signature, de_message)
 
     return
 
-def id_user(signature,de_message):
 
-    #el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
+def id_user(signature, de_message):
+    # el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
 
     with open("A/Acert.pem", "rb") as key_file:
         public_key = serialization.load_pem_public_key(
             key_file.read(),
             backend=default_backend()
         )
-    mar=public_key.verify(signature,de_message,
-                      padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH)
-                      , hashes.SHA256
-                      )
+    mar = public_key.verify(signature, de_message,
+                            padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH)
+                            , hashes.SHA256
+                            )
     print(mar)
     return mar

@@ -8,6 +8,7 @@ import hmac
 import random
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
 
 
 def users_data():
@@ -28,6 +29,12 @@ def users_data():
     )
     public_key = private_key.public_key()
 
+    pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+
     dat = {'Users': []}
 
     dat['Users'].append({
@@ -37,8 +44,6 @@ def users_data():
         'Number': number,
         'Money': money,
         'Key': key,
-        'Public key': public_key,
-        'Private key': private_key
     })
 
     return dat
@@ -112,6 +117,12 @@ def register():
         )
         public_key = private_key.public_key()
 
+        pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
+        )
+
         with open('users_data.json') as file:
             diction = json.load(file)
             for i in diction['Users']:
@@ -130,8 +141,6 @@ def register():
                 'Number': number,
                 'Money': money,
                 'Key': key,
-                'Public key': public_key,
-                'Private key': private_key
             })
 
             with open('users_data.json', 'w') as f:
