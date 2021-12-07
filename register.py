@@ -1,6 +1,6 @@
 """En este archivo se comprueban los datos de registro, es decir, si hay un usuario intentando registrar el mismo
 numero de telefono varias veces. Ademas se crea la base de datos y se añaden nuevos usuarios a la misma"""
-
+#ultima version
 import json
 import os
 import hashlib
