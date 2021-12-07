@@ -21,13 +21,12 @@ def users_data():
     password = str(password)
     hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
-    with open("AC1/ca1key.pem", "rb") as key_file:
-        private_key = serialization.load_pem_private_key(
-            key_file.read(),
-            password=None,
-            backend=default_backend()
-        )
-    public_key=private_key.public_key()
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+    public_key = private_key.public_key()
 
     dat = {'Users': []}
 
@@ -38,7 +37,8 @@ def users_data():
         'Number': number,
         'Money': money,
         'Key': key,
-        'Public key': public_key
+        'Public key': public_key,
+        'Private key': private_key
     })
 
     return dat
@@ -105,12 +105,11 @@ def register():
         password = str(password)
         hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
-        with open("AC1/ca1key.pem", "rb") as key_file:
-            private_key = serialization.load_pem_private_key(
-                key_file.read(),
-                password=None,
-                backend=default_backend()
-            )
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+            backend=default_backend()
+        )
         public_key = private_key.public_key()
 
         with open('users_data.json') as file:
@@ -131,7 +130,8 @@ def register():
                 'Number': number,
                 'Money': money,
                 'Key': key,
-                'Public key': public_key
+                'Public key': public_key,
+                'Private key': private_key
             })
 
             with open('users_data.json', 'w') as f:

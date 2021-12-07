@@ -7,7 +7,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization
-
+import random
 
 def access(i):
     sel = None
@@ -111,9 +111,9 @@ def account_update(sender, receiver, money, i):
     return
 
 
-def certificateTrans(money, i, reciver):
+def certificateTrans(i, reciver):
 
-    message = "I"+ "("+ i + ")" + "am sending" + money + "to" + reciver
+    message = random.randrange(100000000, 999999999, 1)
     public_key = json_atributos(i,'Public key')
     encrypted = public_key.encrypt(
         message,padding.OAEP(
@@ -123,20 +123,13 @@ def certificateTrans(money, i, reciver):
         )
     )
 
-    entidad_certificado(encrypted)
-
-    if id_user()==True:
-        return True
-    else:
-        return False
+    usuario_receptor(encrypted,reciver)
 
 
-def entidad_certificado(encrypted):
 
-    with open("AC1/ca1key.pem", "rb") as key_file:
-        private_key = serialization.load_pem_private_key(
-            key_file.read(), password=None, backend=default_backend()
-        )
+def usuario_receptor(encrypted,reciver):
+
+    private_key= json_atributos(reciver,'Private key')
 
     de_message = private_key.decrypt(encrypted, padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -146,6 +139,13 @@ def entidad_certificado(encrypted):
                                      )
 
     #firma el mensaje que ha descifrado con la clave privada del certificado.
+
+    with open("A/Akey.pem", "rb") as key_file:
+        private_key = serialization.load_pem_private_key(
+            key_file.read(),
+            password=None,
+            backend=default_backend()
+        )
 
     signature = private_key.sign(
         de_message,
@@ -157,23 +157,22 @@ def entidad_certificado(encrypted):
     )
 
 
-    id_user(signature,private_key,de_message)
+    id_user(signature,de_message)
 
     return
 
-def id_user(signature,private_key,de_message):
+def id_user(signature,de_message):
 
     #el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
 
-    with open("public_key.pem", "rb") as key_file:
+    with open("A/Acert.pem", "rb") as key_file:
         public_key = serialization.load_pem_public_key(
             key_file.read(),
             backend=default_backend()
         )
-    public_key = private_key.public_key()
-    public_key.verify(signature,de_message,
+    mar=public_key.verify(signature,de_message,
                       padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH)
                       , hashes.SHA256
                       )
-
-    return
+    print(mar)
+    return mar
