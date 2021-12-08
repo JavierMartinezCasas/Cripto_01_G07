@@ -24,13 +24,6 @@ def users_data():
     password = str(password)
     hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
-
-    pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption()
-    )
-
     dat = {'Users': []}
 
     dat['Users'].append({
@@ -109,20 +102,6 @@ def register():
         hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
 
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend()
-        )
-        public_key = private_key.public_key()
-
-        pem = private_key.private_bytes(
-            encoding=serialization.Encoding.PEM,
-            format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
-        )
-
-
         with open('users_data.json') as file:
             diction = json.load(file)
             for i in diction['Users']:
@@ -141,7 +120,6 @@ def register():
                 'Number': number,
                 'Money': money,
                 'Key': key,
-
                 'Type': tipo
             })
 
