@@ -16,17 +16,13 @@ def users_data():
     password = input("Input your password: ")
     number = input("Input your phone number: ")
     money = input("Input the max amount amount of money you want to use in our app: ")
+    tipo = input("Input your type of user: ")
+
 
     key = str(random.random())
     password = str(password)
     hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
 
-    private_key = rsa.generate_private_key(
-        public_exponent=65537,
-        key_size=2048,
-        backend=default_backend()
-    )
-    public_key = private_key.public_key()
 
     dat = {'Users': []}
 
@@ -37,8 +33,7 @@ def users_data():
         'Number': number,
         'Money': money,
         'Key': key,
-        'Public key': public_key,
-        'Private key': private_key
+        'Type': tipo
     })
 
     return dat
@@ -100,17 +95,11 @@ def register():
             return"""
         number = input("Input your phone number: ")
         money = input("Input the max amount amount of money you want to use in our app: ")
+        tipo = input("Input your type of user: ")
 
         key = str(random.random())
         password = str(password)
         hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
-
-        private_key = rsa.generate_private_key(
-            public_exponent=65537,
-            key_size=2048,
-            backend=default_backend()
-        )
-        public_key = private_key.public_key()
 
         with open('users_data.json') as file:
             diction = json.load(file)
@@ -130,8 +119,7 @@ def register():
                 'Number': number,
                 'Money': money,
                 'Key': key,
-                'Public key': public_key,
-                'Private key': private_key
+                'Type': tipo
             })
 
             with open('users_data.json', 'w') as f:

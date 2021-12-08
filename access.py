@@ -2,7 +2,6 @@ import json
 from checking_users import checking_users
 from json_atributos import json_atributos
 from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -16,7 +15,7 @@ def access(i):
 
         if sel == '1':
             print()
-            print("The money in your account is: " + i['Money'] + "€")
+            print("The money in your account is: " + str(i['Money']) + "€")
 
         if sel == '0':
             send_money(i)
@@ -42,16 +41,17 @@ def send_money(i):
 
         else:
             if money >= 500:
-                if certificateTrans(money, i, receiver) is True:
-                    key = Fernet.generate_key()
-                    f = Fernet(key)
+                if certificateTrans(i,receiver,money) is True:
+                    print('Done')
+                    key=Fernet.generate_key()
+                    f=Fernet(key)
                     money = str(money)
                     money = money.encode()
-                    token = f.encrypt(money)
-                    receive_money(sender, receiver, token, money, key, f, i)
+                    token=f.encrypt(money)
+                    receive_money(sender, receiver, token, money, key, f,i)
 
                 else:
-                    return
+                    print('Error')
 
             else:
                 key = Fernet.generate_key()
@@ -59,7 +59,7 @@ def send_money(i):
                 money = str(money)
                 money = money.encode()
                 token = f.encrypt(money)
-                receive_money(sender, receiver, token, money, key, f, i)
+                receive_money(sender, receiver, token, money, key, f,i)
 
     else:
         print('There is not any user with that phone number, please, try again')
@@ -67,8 +67,8 @@ def send_money(i):
         return
 
 
-def receive_money(sender, receiver, token, money, key, f, i):
-    des_token = f.decrypt(token)
+def receive_money(sender, receiver, token, money,key,f, i):
+    des_token=f.decrypt(token)
 
     if des_token == money:
         print()
@@ -89,7 +89,7 @@ def account_update(sender, receiver, money, i):
     balance_receiver = int(json_atributos(receiver, "Money"))
     balance_sender -= int(money)
     balance_receiver += int(money)
-
+    print('3')
     list_aux = []
 
     with open('users_data.json') as file:
@@ -111,10 +111,26 @@ def account_update(sender, receiver, money, i):
     return
 
 
-def certificateTrans(i, reciver):
+def certificateTrans(i,reciver,money):
 
-    message = random.randrange(100000000, 999999999, 1)
-    public_key = json_atributos(i,'Public key')
+    message =str(random.randrange(100000000, 999999999, 1))
+    message=message.encode()
+    if json_atributos(i,'Type')=='A':
+        with open("B/Bkey.pem", "rb") as key_file:
+            private_key = serialization.load_pem_private_key(
+                key_file.read(),
+                password=b'\x6f\x70\x65\x6e\x73\x73\x6c\x20\x72\x65\x71\x20\x2d\x69\x6e\x20\x41\x72\x65\x71\x2e\x70\x65\x6d\x20\x2d\x74\x65\x78\x74\x20\x2d\x6e\x6f\x6f\x75\x74',
+                backend=default_backend()
+            )
+    else:
+        with open("A/Akey.pem", "rb") as key_file:
+            private_key = serialization.load_pem_private_key(
+                key_file.read(),
+                password=b'\x6f\x70\x65\x6e\x73\x73\x6c\x20\x72\x65\x71\x20\x2d\x69\x6e\x20\x41\x72\x65\x71\x2e\x70\x65\x6d\x20\x2d\x74\x65\x78\x74\x20\x2d\x6e\x6f\x6f\x75\x74',
+                backend=default_backend()
+        )
+
+    public_key=private_key.public_key()
     encrypted = public_key.encrypt(
         message,padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -123,13 +139,15 @@ def certificateTrans(i, reciver):
         )
     )
 
-    usuario_receptor(encrypted,reciver)
+    if usuario_receptor(encrypted,reciver,private_key,public_key)==True:
+        print('2')
+        return True
+    else:
+        return False
 
 
+def usuario_receptor(encrypted,reciver,private_key,public_key):
 
-def usuario_receptor(encrypted,reciver):
-
-    private_key= json_atributos(reciver,'Private key')
 
     de_message = private_key.decrypt(encrypted, padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -139,13 +157,6 @@ def usuario_receptor(encrypted,reciver):
                                      )
 
     #firma el mensaje que ha descifrado con la clave privada del certificado.
-
-    with open("A/Akey.pem", "rb") as key_file:
-        private_key = serialization.load_pem_private_key(
-            key_file.read(),
-            password=None,
-            backend=default_backend()
-        )
 
     signature = private_key.sign(
         de_message,
@@ -157,22 +168,21 @@ def usuario_receptor(encrypted,reciver):
     )
 
 
-    id_user(signature,de_message)
+    if id_user(signature,de_message,public_key)==None:
+        print('1')
+        return True
+    else:
+        return False
 
-    return
-
-def id_user(signature,de_message):
+def id_user(signature,de_message,public_key):
 
     #el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
 
-    with open("A/Acert.pem", "rb") as key_file:
-        public_key = serialization.load_pem_public_key(
-            key_file.read(),
-            backend=default_backend()
-        )
     mar=public_key.verify(signature,de_message,
-                      padding.PSS(mgf=padding.MGF1(hashes.SHA256()),salt_length=padding.PSS.MAX_LENGTH)
-                      , hashes.SHA256
+                      padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                                  salt_length=padding.PSS.MAX_LENGTH
+                                  ),
+                                hashes.SHA256()
                       )
-    print(mar)
+
     return mar
