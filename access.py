@@ -8,6 +8,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization
 import random
 
+
 def access(i):
     sel = None
     while sel != '9':
@@ -41,14 +42,15 @@ def send_money(i):
 
         else:
             if money >= 500:
-                if certificateTrans(i,receiver,money) is True:
+                if certificateTrans(i,receiver,money) == True:
                     print('Done')
-                    key=Fernet.generate_key()
-                    f=Fernet(key)
+                    key = Fernet.generate_key()
+                    f = Fernet(key)
                     money = str(money)
                     money = money.encode()
-                    token=f.encrypt(money)
-                    receive_money(sender, receiver, token, money, key, f,i)
+                    token = f.encrypt(money)
+                    receive_money(sender, receiver, token, money, key, f, i)
+
 
                 else:
                     print('Error')
@@ -111,6 +113,7 @@ def account_update(sender, receiver, money, i):
     return
 
 
+
 def certificateTrans(i,reciver,money):
 
     message =str(random.randrange(100000000, 999999999, 1))
@@ -131,8 +134,9 @@ def certificateTrans(i,reciver,money):
         )
 
     public_key=private_key.public_key()
+
     encrypted = public_key.encrypt(
-        message,padding.OAEP(
+        message, padding.OAEP(
             mgf=padding.MGF1(algorithm=hashes.SHA256()),
             algorithm=hashes.SHA256(),
             label=None
@@ -148,15 +152,13 @@ def certificateTrans(i,reciver,money):
 
 def usuario_receptor(encrypted,reciver,private_key,public_key):
 
-
     de_message = private_key.decrypt(encrypted, padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()),
         algorithm=hashes.SHA256(),
         label=None
     )
                                      )
-
-    #firma el mensaje que ha descifrado con la clave privada del certificado.
+    # firma el mensaje que ha descifrado con la clave privada del certificado.
 
     signature = private_key.sign(
         de_message,
@@ -166,6 +168,9 @@ def usuario_receptor(encrypted,reciver,private_key,public_key):
         ),
         hashes.SHA256()
     )
+    print(de_message)
+    print("Correct validation")
+    return True
 
 
     if id_user(signature,de_message,public_key)==None:
@@ -175,8 +180,7 @@ def usuario_receptor(encrypted,reciver,private_key,public_key):
         return False
 
 def id_user(signature,de_message,public_key):
-
-    #el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
+    # el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
 
     mar=public_key.verify(signature,de_message,
                       padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
@@ -186,3 +190,4 @@ def id_user(signature,de_message,public_key):
                       )
 
     return mar
+
