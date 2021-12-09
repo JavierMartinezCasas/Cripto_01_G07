@@ -42,15 +42,13 @@ def send_money(i):
 
         else:
             if money >= 500:
-                if certificateTrans(i,receiver,money) == True:
-                    print('Done')
+                if certificateTrans(i, receiver, money):
                     key = Fernet.generate_key()
                     f = Fernet(key)
                     money = str(money)
                     money = money.encode()
                     token = f.encrypt(money)
                     receive_money(sender, receiver, token, money, key, f, i)
-
 
                 else:
                     print('Error')
@@ -61,16 +59,16 @@ def send_money(i):
                 money = str(money)
                 money = money.encode()
                 token = f.encrypt(money)
-                receive_money(sender, receiver, token, money, key, f,i)
+                receive_money(sender, receiver, token, money, key, f, i)
 
     else:
-        print('There is not any user with that phone number, please, try again')
+        print('There is not any user with that phone number, please try again')
         access(i)
         return
 
 
-def receive_money(sender, receiver, token, money,key,f, i):
-    des_token=f.decrypt(token)
+def receive_money(sender, receiver, token, money, key, f, i):
+    des_token = f.decrypt(token)
 
     if des_token == money:
         print()
@@ -91,7 +89,6 @@ def account_update(sender, receiver, money, i):
     balance_receiver = int(json_atributos(receiver, "Money"))
     balance_sender -= int(money)
     balance_receiver += int(money)
-    print('3')
     list_aux = []
 
     with open('users_data.json') as file:
@@ -113,12 +110,10 @@ def account_update(sender, receiver, money, i):
     return
 
 
-
-def certificateTrans(i,reciver,money):
-
-    message =str(random.randrange(100000000, 999999999, 1))
-    message=message.encode()
-    if json_atributos(i,'Type')=='A':
+def certificateTrans(i, reciver, money):
+    message = str(random.randrange(100000000, 999999999, 1))
+    message = message.encode()
+    if str(i['Type']) == 'A':
         with open("B/Bkey.pem", "rb") as key_file:
             private_key = serialization.load_pem_private_key(
                 key_file.read(),
@@ -131,9 +126,9 @@ def certificateTrans(i,reciver,money):
                 key_file.read(),
                 password=b'\x6f\x70\x65\x6e\x73\x73\x6c\x20\x72\x65\x71\x20\x2d\x69\x6e\x20\x41\x72\x65\x71\x2e\x70\x65\x6d\x20\x2d\x74\x65\x78\x74\x20\x2d\x6e\x6f\x6f\x75\x74',
                 backend=default_backend()
-        )
+            )
 
-    public_key=private_key.public_key()
+    public_key = private_key.public_key()
 
     encrypted = public_key.encrypt(
         message, padding.OAEP(
@@ -143,15 +138,13 @@ def certificateTrans(i,reciver,money):
         )
     )
 
-    if usuario_receptor(encrypted,reciver,private_key,public_key)==True:
-        print('2')
+    if usuario_receptor(encrypted, reciver, private_key, public_key):
         return True
     else:
         return False
 
 
-def usuario_receptor(encrypted,reciver,private_key,public_key):
-
+def usuario_receptor(encrypted, reciver, private_key, public_key):
     de_message = private_key.decrypt(encrypted, padding.OAEP(
         mgf=padding.MGF1(algorithm=hashes.SHA256()),
         algorithm=hashes.SHA256(),
@@ -168,26 +161,23 @@ def usuario_receptor(encrypted,reciver,private_key,public_key):
         ),
         hashes.SHA256()
     )
-    print(de_message)
-    print("Correct validation")
-    return True
+    print()
+    print("Correct validation!")
 
-
-    if id_user(signature,de_message,public_key)==None:
-        print('1')
+    if id_user(signature, de_message, public_key) is None:
         return True
     else:
         return False
 
-def id_user(signature,de_message,public_key):
+
+def id_user(signature, de_message, public_key):
     # el usuario utiliza la clave publica de la entidad que esta en conocimiento de todos para obtener la clave publica
 
-    mar=public_key.verify(signature,de_message,
-                      padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
-                                  salt_length=padding.PSS.MAX_LENGTH
-                                  ),
-                                hashes.SHA256()
-                      )
+    mar = public_key.verify(signature, de_message,
+                            padding.PSS(mgf=padding.MGF1(hashes.SHA256()),
+                                        salt_length=padding.PSS.MAX_LENGTH
+                                        ),
+                            hashes.SHA256()
+                            )
 
     return mar
-

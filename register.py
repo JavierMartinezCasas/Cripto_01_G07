@@ -1,6 +1,6 @@
 """En este archivo se comprueban los datos de registro, es decir, si hay un usuario intentando registrar el mismo
 numero de telefono varias veces. Ademas se crea la base de datos y se añaden nuevos usuarios a la misma"""
-#ultima version
+# ultima version
 import json
 import os
 import hashlib
@@ -14,11 +14,19 @@ from cryptography.hazmat.primitives import serialization
 def users_data():
     name = input("Input your name: ")
     last_name = input("Input your last name: ")
+    print()
+    print("The password needs to be at least 8 characters long and must include at least 1 number, 1 capital "
+          "letter and 1 sign (@,#,~, etc...)")
     password = input("Input your password: ")
+    while not passCheck(password):
+        print()
+        print("Error: Incorrect password, try again following the instructions above")
+        password = input("Input your password: ")
+    print("Password validated, continue your registration")
+    print()
     number = input("Input your phone number: ")
     money = input("Input the max amount amount of money you want to use in our app: ")
     tipo = input("Input your type of user: ")
-
 
     key = str(random.random())
     password = str(password)
@@ -100,7 +108,6 @@ def register():
         key = str(random.random())
         password = str(password)
         hmac_password = hmac.new(key.encode(), password.encode(), hashlib.sha512).hexdigest()
-
 
         with open('users_data.json') as file:
             diction = json.load(file)
